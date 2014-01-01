@@ -114,6 +114,18 @@ class TestConfigObj(ConfigObjTestcase):
             self.assertEqual(warning.category, DeprecationWarning)
             self.assertIn("deprecated", str(warning.message))
 
+    #--------------------------------------------------------------------------
+    def test_list_members(self):
+
+        import configobj
+        from configobj import ConfigObj
+
+        log.info("Testing list members ...")
+        c = ConfigObj()
+        c['a'] = []
+        c['a'].append('foo')
+        self.assertEqual(c['a'], ['foo'])
+
 #==============================================================================
 
 if __name__ == '__main__':
@@ -130,6 +142,7 @@ if __name__ == '__main__':
     suite.addTest(TestConfigObj('test_import', verbose))
     suite.addTest(TestConfigObj('test_order_preserved', verbose))
     suite.addTest(TestConfigObj('test_options_deprecation', verbose))
+    suite.addTest(TestConfigObj('test_list_members', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 
