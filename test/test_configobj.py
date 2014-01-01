@@ -189,6 +189,23 @@ class TestConfigObj(ConfigObjTestcase):
         co = repr(c)
         log.debug("Repr of ConfigObj: %s", co)
 
+    #--------------------------------------------------------------------------
+    def test_interoplation_repr(self):
+
+        import configobj
+        from configobj import ConfigObj
+
+        log.info("Testing interpolation with repr ...")
+
+        c = ConfigObj(['foo = $bar'], interpolation = 'Template')
+        c['baz'] = {}
+        c['baz']['spam'] = '%(bar)s'
+        log.debug("ConfigObj: %s", str(c))
+
+        # This raises a MissingInterpolationOption exception in 4.7.1 and earlier
+        co = repr(c)
+        log.debug("Repr of ConfigObj: %s", co)
+
 #==============================================================================
 
 if __name__ == '__main__':
@@ -209,6 +226,7 @@ if __name__ == '__main__':
     suite.addTest(TestConfigObj('test_list_interpolation_with_pop', verbose))
     suite.addTest(TestConfigObj('test_with_default', verbose))
     suite.addTest(TestConfigObj('test_interpolation_with_section_names', verbose))
+    suite.addTest(TestConfigObj('test_interoplation_repr', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 
