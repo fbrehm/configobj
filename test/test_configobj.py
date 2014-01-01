@@ -40,7 +40,17 @@ class TestConfigObj(ConfigObjTestcase):
 
     #--------------------------------------------------------------------------
     def setUp(self):
-        pass
+
+        self.testdir = os.path.join(libdir, 'functionaltests')
+
+        self.ini_file_ascii = os.path.join(self.testdir, 'conf.ascii.ini')
+        self.ini_file_utf_8 = os.path.join(self.testdir, 'conf.utf-8.ini')
+        self.ini_file_utf_16 = os.path.join(self.testdir, 'conf.utf-16.ini')
+        self.ini_file_utf_16be = os.path.join(self.testdir, 'conf.utf-16be.ini')
+        self.ini_file_utf_16le = os.path.join(self.testdir, 'conf.utf-16le.ini')
+        self.ini_file_utf_32 = os.path.join(self.testdir, 'conf.utf-32.ini')
+        self.ini_file_utf_32be = os.path.join(self.testdir, 'conf.utf-32be.ini')
+        self.ini_file_utf_32le = os.path.join(self.testdir, 'conf.utf-32le.ini')
 
     #--------------------------------------------------------------------------
     def test_import(self):
@@ -208,6 +218,31 @@ class TestConfigObj(ConfigObjTestcase):
         co = repr(c)
         log.debug("Repr of ConfigObj: %s", co)
 
+    #--------------------------------------------------------------------------
+    def test_utf_8(self):
+
+        import configobj
+        from configobj import ConfigObj
+
+        log.info("Testing loading an .ini-file with utf-8 ...")
+
+        if not os.path.isfile(self.ini_file_utf_8):
+            self.fail("Ini file %r doesn't exists." % (self.ini_file_utf_8))
+
+        conf = ConfigObj(self.ini_file_utf_8)
+        log.debug("ConfigObj: %s", str(conf))
+        german_umlaute = 'ä ö ü Ä Ö Ü ß'
+        currency_signs = '¤ $ € ¢ ¥'
+        a_accents = 'À Á À Â Ã Å Æ à á à â ã å æ'
+        if sys.version_info[0] <= 2:
+            german_umlaute = german_umlaute.decode('utf-8')
+            currency_signs = currency_signs.decode('utf-8')
+            a_accents = a_accents.decode('utf-8')
+
+        self.assertEqual(german_umlaute, conf['german_umlaute'])
+        self.assertEqual(currency_signs, conf['currency_signs'])
+        self.assertEqual(a_accents, conf['a_accents'])
+
 #==============================================================================
 
 if __name__ == '__main__':
@@ -229,6 +264,7 @@ if __name__ == '__main__':
     suite.addTest(TestConfigObj('test_with_default', verbose))
     suite.addTest(TestConfigObj('test_interpolation_with_section_names', verbose))
     suite.addTest(TestConfigObj('test_interoplation_repr', verbose))
+    suite.addTest(TestConfigObj('test_utf_8', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 
