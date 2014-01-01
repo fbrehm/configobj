@@ -121,10 +121,44 @@ class TestConfigObj(ConfigObjTestcase):
         from configobj import ConfigObj
 
         log.info("Testing list members ...")
+
         c = ConfigObj()
         c['a'] = []
         c['a'].append('foo')
         self.assertEqual(c['a'], ['foo'])
+
+    #--------------------------------------------------------------------------
+    def test_list_interpolation_with_pop(self):
+
+        import configobj
+        from configobj import ConfigObj
+
+        log.info("Testing interpolation with pop ...")
+
+        c = ConfigObj()
+        c['a'] = []
+        c['a'].append('%(b)s')
+        c['b'] = 'bar'
+        self.assertEqual(c.pop('a'), ['bar'])
+
+    #--------------------------------------------------------------------------
+    def test_with_default(self):
+
+        import configobj
+        from configobj import ConfigObj
+
+        log.info("Testing default values with pop ...")
+
+        c = ConfigObj()
+        c['a'] = 3
+
+        self.assertEqual(c.pop('a'), 3)
+        self.assertEqual(c.pop('b', 3), 3)
+
+        with self.assertRaises(KeyError) as cm:
+            value = c.pop('c')
+        e = cm.exception
+        log.debug("%s raised: %s", e.__class__.__name__, e)
 
 #==============================================================================
 
@@ -143,6 +177,8 @@ if __name__ == '__main__':
     suite.addTest(TestConfigObj('test_order_preserved', verbose))
     suite.addTest(TestConfigObj('test_options_deprecation', verbose))
     suite.addTest(TestConfigObj('test_list_members', verbose))
+    suite.addTest(TestConfigObj('test_list_interpolation_with_pop', verbose))
+    suite.addTest(TestConfigObj('test_with_default', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 
