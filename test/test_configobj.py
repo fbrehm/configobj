@@ -17,6 +17,14 @@ try:
 except ImportError:
     import unittest
 
+catch_warnings = None
+try:
+    import warnings
+    # for Python2 >= 2.6 and Python3
+    from warnings import catch_warnings
+except ImportError:
+    catch_warnings = None
+
 libdir = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), '..'))
 sys.path.insert(0, libdir)
 
@@ -78,6 +86,34 @@ class TestConfigObj(ConfigObjTestcase):
         self.assertFalse(c['section'] is c2['section'])
         self.assertFalse(c['section']['section'] is c2['section']['section'])
 
+    #--------------------------------------------------------------------------
+    @unittest.skipIf(catch_warnings is None,
+            "catch_warnings() from module warnings not available")
+    def test_options_deprecation(self):
+
+        import configobj
+        from configobj import ConfigObj
+
+        log.info("Test for DeprecationWarning ...")
+
+        with catch_warnings(record = True) as w:
+
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            # Trigger a warning.
+            ConfigObj(options = {})
+
+            self.assertEqual(len(w), 1)
+
+            # unpack the only member of log
+            warning = w[0]
+
+            # check the warning
+            log.debug("Got warning: %r", warning.message)
+            self.assertEqual(warning.category, DeprecationWarning)
+            self.assertIn("deprecated", str(warning.message))
+
 #==============================================================================
 
 if __name__ == '__main__':
@@ -93,6 +129,7 @@ if __name__ == '__main__':
 
     suite.addTest(TestConfigObj('test_import', verbose))
     suite.addTest(TestConfigObj('test_order_preserved', verbose))
+    suite.addTest(TestConfigObj('test_options_deprecation', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 
