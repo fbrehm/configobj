@@ -43,6 +43,15 @@ class TestValidateErrors(ConfigObjTestcase):
         log.info("Testing import ConfigObj from configobj ...")
         from configobj import ConfigObj
 
+        log.info("Testing import get_extra_values from configobj ...")
+        from configobj import get_extra_values
+
+        log.info("Testing import of validate ...")
+        import validate
+
+        log.info("Testing import Validator from validate ...")
+        from validate import Validator
+
 
 #==============================================================================
 
