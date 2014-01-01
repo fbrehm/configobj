@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 @author: Frank Brehm
-@contact: frank.brehm@profitbricks.com
-@organization: Profitbricks GmbH
-@copyright: © 2010-2013 by Profitbricks GmbH
+@contact: frank@brehm-online.com
+@copyright: © 2010 - 2013 by Frank Brehm, Berlin Germany
 @license: GPL3
 @summary: general used functions an objects used for unit tests on
           the configobj modules
@@ -43,9 +42,11 @@ def get_arg_verbose():
 def init_root_logger(verbose = 0):
 
     root_log = logging.getLogger()
-    root_log.setLevel(logging.INFO)
-    if verbose:
+    root_log.setLevel(logging.WARNING)
+    if verbose > 1:
          root_log.setLevel(logging.DEBUG)
+    elif verbose:
+         root_log.setLevel(logging.INFO)
 
     appname = os.path.basename(sys.argv[0])
     format_str = appname + ': '
@@ -76,7 +77,7 @@ class ConfigObjTestcase(unittest.TestCase):
 
         self._verbose = int(verbose)
 
-        super(PbBaseTestcase, self).__init__(methodName)
+        super(ConfigObjTestcase, self).__init__(methodName)
 
     #--------------------------------------------------------------------------
     @property
