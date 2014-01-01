@@ -107,6 +107,27 @@ class TestValidateErrors(ConfigObjTestcase):
         self.assertFalse(section['sub-section']['value'])
         self.assertFalse(section['missing-subsection'])
 
+    #--------------------------------------------------------------------------
+    def test_validate_extra_values(self):
+
+        log.info("Test validate with extra values.")
+
+        from configobj import ConfigObj
+        from validate import Validator
+
+        log.debug("Using ini file %r.", self.ini_file)
+        log.debug("Using spec file %r.", self.spec_file)
+
+        conf = ConfigObj(self.ini_file, configspec = self.spec_file)
+
+        conf.validate(Validator(), preserve_errors = True)
+        log.debug("ConfigObj after validate: %s", str(conf))
+
+        self.assertEqual(conf.extra_values, ['extra', 'extra-section'])
+
+        self.assertEqual(conf['section'].extra_values, ['extra-sub-section'])
+        self.assertEqual(conf['section']['sub-section'].extra_values,
+                         ['extra'])
 
 #==============================================================================
 
@@ -124,6 +145,7 @@ if __name__ == '__main__':
     suite.addTest(TestValidateErrors('test_import', verbose))
     suite.addTest(TestValidateErrors('test_validate_no_valid_entries', verbose))
     suite.addTest(TestValidateErrors('test_validate_preserve_errors', verbose))
+    suite.addTest(TestValidateErrors('test_validate_extra_values', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 
