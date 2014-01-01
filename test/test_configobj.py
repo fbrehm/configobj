@@ -11,6 +11,7 @@
 import os
 import sys
 import logging
+import textwrap
 
 try:
     import unittest2 as unittest
@@ -160,6 +161,34 @@ class TestConfigObj(ConfigObjTestcase):
         e = cm.exception
         log.debug("%s raised: %s", e.__class__.__name__, e)
 
+    #--------------------------------------------------------------------------
+    def test_interpolation_with_section_names(self):
+
+        import configobj
+        from configobj import ConfigObj
+
+        log.info("Testing interpolation with section names ...")
+
+        cfg = """\
+        item1 = 1234
+        [section]
+            [[item1]]
+            foo='bar'
+            [[DEFAULT]]
+                [[[item1]]]
+                why = would you do this?
+            [[other-subsection]]
+            item2 = '$item1'"""
+        cfg = textwrap.dedent(cfg).splitlines()
+
+        c = ConfigObj(cfg, interpolation = 'Template')
+        log.debug("ConfigObj: %s", str(c))
+
+        # This raises an exception in 4.7.1 and earlier due to the section
+        # being found as the interpolation value
+        co = repr(c)
+        log.debug("Repr of ConfigObj: %s", co)
+
 #==============================================================================
 
 if __name__ == '__main__':
@@ -179,6 +208,7 @@ if __name__ == '__main__':
     suite.addTest(TestConfigObj('test_list_members', verbose))
     suite.addTest(TestConfigObj('test_list_interpolation_with_pop', verbose))
     suite.addTest(TestConfigObj('test_with_default', verbose))
+    suite.addTest(TestConfigObj('test_interpolation_with_section_names', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 
