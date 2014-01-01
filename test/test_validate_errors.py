@@ -81,6 +81,32 @@ class TestValidateErrors(ConfigObjTestcase):
         log.debug("Result of validation: %r", result)
         self.assertFalse(result)
 
+    #--------------------------------------------------------------------------
+    def test_validate_preserve_errors(self):
+
+        log.info("Test validate with preserving errors.")
+
+        from configobj import ConfigObj
+        from validate import Validator
+
+        log.debug("Using ini file %r.", self.ini_file)
+        log.debug("Using spec file %r.", self.spec_file)
+
+        conf = ConfigObj(self.ini_file, configspec = self.spec_file)
+        log.debug("ConfigObj: %s", str(conf))
+
+        validator = Validator()
+        result = conf.validate(validator, preserve_errors = True)
+        log.debug("Result of validation: %r", result)
+
+        self.assertFalse(result['value'])
+        self.assertFalse(result['missing-section'])
+
+        section = result['section']
+        self.assertFalse(section['value'])
+        self.assertFalse(section['sub-section']['value'])
+        self.assertFalse(section['missing-subsection'])
+
 
 #==============================================================================
 
@@ -97,6 +123,7 @@ if __name__ == '__main__':
 
     suite.addTest(TestValidateErrors('test_import', verbose))
     suite.addTest(TestValidateErrors('test_validate_no_valid_entries', verbose))
+    suite.addTest(TestValidateErrors('test_validate_preserve_errors', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 
