@@ -37,10 +37,8 @@ class TestValidateErrors(ConfigObjTestcase):
         self.ini_file = os.path.join(self.testdir, 'conf.ini')
         self.spec_file = os.path.join(self.testdir, 'conf.spec')
 
-        log.debug("Using ini file %r.", self.ini_file)
         if not os.path.isfile(self.ini_file):
             self.fail("Ini file %r doesn't exists." % (self.ini_file))
-        log.debug("Using spec file %r.", self.spec_file)
         if not os.path.isfile(self.spec_file):
             self.fail("Spec file %r doesn't exists." % (self.spec_file))
 
@@ -64,6 +62,25 @@ class TestValidateErrors(ConfigObjTestcase):
         log.debug("Testing import Validator from validate ...")
         from validate import Validator
 
+    #--------------------------------------------------------------------------
+    def test_validate_no_valid_entries(self):
+
+        log.info("Test validate with no valid entries.")
+
+        from configobj import ConfigObj
+        from validate import Validator
+
+        log.debug("Using ini file %r.", self.ini_file)
+        log.debug("Using spec file %r.", self.spec_file)
+
+        conf = ConfigObj(self.ini_file, configspec = self.spec_file)
+        log.debug("ConfigObj: %s", str(conf))
+
+        validator = Validator()
+        result = conf.validate(validator)
+        log.debug("Result of validation: %r", result)
+        self.assertFalse(result)
+
 
 #==============================================================================
 
@@ -79,6 +96,7 @@ if __name__ == '__main__':
     suite = unittest.TestSuite()
 
     suite.addTest(TestValidateErrors('test_import', verbose))
+    suite.addTest(TestValidateErrors('test_validate_no_valid_entries', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 
