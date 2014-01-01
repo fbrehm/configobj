@@ -129,6 +129,35 @@ class TestValidateErrors(ConfigObjTestcase):
         self.assertEqual(conf['section']['sub-section'].extra_values,
                          ['extra'])
 
+    #--------------------------------------------------------------------------
+    def test_get_extra_values(self):
+
+        log.info("Test getting extra values.")
+
+        from configobj import ConfigObj, get_extra_values
+        from validate import Validator
+
+        log.debug("Using ini file %r.", self.ini_file)
+        log.debug("Using spec file %r.", self.spec_file)
+
+        conf = ConfigObj(self.ini_file, configspec = self.spec_file)
+
+        conf.validate(Validator(), preserve_errors = True)
+        log.debug("ConfigObj after validate: %s", str(conf))
+
+        expected = sorted([
+            ((), 'extra'),
+            ((), 'extra-section'),
+            (('section', 'sub-section'), 'extra'),
+            (('section',), 'extra-sub-section'),
+        ])
+        log.debug("Expected extra values: %r.", expected)
+
+        extra_values = get_extra_values(conf)
+        log.debug("Got extra values: %r.", extra_values)
+
+        self.assertEqual(sorted(extra_values), expected)
+
 #==============================================================================
 
 if __name__ == '__main__':
@@ -146,6 +175,7 @@ if __name__ == '__main__':
     suite.addTest(TestValidateErrors('test_validate_no_valid_entries', verbose))
     suite.addTest(TestValidateErrors('test_validate_preserve_errors', verbose))
     suite.addTest(TestValidateErrors('test_validate_extra_values', verbose))
+    suite.addTest(TestValidateErrors('test_get_extra_values', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 
