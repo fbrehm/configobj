@@ -10,11 +10,14 @@
           the configobj modules
 """
 
-import unittest
 import os
 import sys 
 import logging
 import argparse
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 # Own modules
 
