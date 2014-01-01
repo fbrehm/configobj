@@ -32,24 +32,36 @@ class TestValidateErrors(ConfigObjTestcase):
 
     #--------------------------------------------------------------------------
     def setUp(self):
-        pass
+
+        self.testdir = os.path.join(libdir, 'functionaltests')
+        self.ini_file = os.path.join(self.testdir, 'conf.ini')
+        self.spec_file = os.path.join(self.testdir, 'conf.spec')
+
+        log.debug("Using ini file %r.", self.ini_file)
+        if not os.path.isfile(self.ini_file):
+            self.fail("Ini file %r doesn't exists." % (self.ini_file))
+        log.debug("Using spec file %r.", self.spec_file)
+        if not os.path.isfile(self.spec_file):
+            self.fail("Spec file %r doesn't exists." % (self.spec_file))
 
     #--------------------------------------------------------------------------
     def test_import(self):
 
-        log.info("Testing import of configobj ...")
+        log.info("Test importing necessary stuff")
+
+        log.debug("Testing import of configobj ...")
         import configobj
 
-        log.info("Testing import ConfigObj from configobj ...")
+        log.debug("Testing import ConfigObj from configobj ...")
         from configobj import ConfigObj
 
-        log.info("Testing import get_extra_values from configobj ...")
+        log.debug("Testing import get_extra_values from configobj ...")
         from configobj import get_extra_values
 
-        log.info("Testing import of validate ...")
+        log.debug("Testing import of validate ...")
         import validate
 
-        log.info("Testing import Validator from validate ...")
+        log.debug("Testing import Validator from validate ...")
         from validate import Validator
 
 

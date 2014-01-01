@@ -45,10 +45,12 @@ class TestConfigObj(ConfigObjTestcase):
     #--------------------------------------------------------------------------
     def test_import(self):
 
-        log.info("Testing import of configobj ...")
+        log.info("Test importing necessary stuff")
+
+        log.debug("Testing import of configobj ...")
         import configobj
 
-        log.info("Testing import ConfigObj from configobj ...")
+        log.debug("Testing import ConfigObj from configobj ...")
         from configobj import ConfigObj
 
     #--------------------------------------------------------------------------
