@@ -42,6 +42,41 @@ class TestConfigObj(ConfigObjTestcase):
         log.info("Testing import ConfigObj from configobj ...")
         from configobj import ConfigObj
 
+    #--------------------------------------------------------------------------
+    def test_order_preserved(self):
+
+        import configobj
+        from configobj import ConfigObj
+
+        log.info("Testing preserved order ...")
+
+        c = ConfigObj()
+        c['a'] = 1
+        c['b'] = 2
+        c['c'] = 3
+        c['section'] = {}
+        c['section']['a'] = 1
+        c['section']['b'] = 2
+        c['section']['c'] = 3
+        c['section']['section'] = {}
+        c['section']['section2'] = {}
+        c['section']['section3'] = {}
+        c['section2'] = {}
+        c['section3'] = {}
+
+        log.debug("ConfigObj 1: %s", str(c))
+
+        c2 = ConfigObj(c)
+
+        log.debug("ConfigObj 2: %s", str(c2))
+
+        self.assertEqual(c2.scalars, ['a', 'b', 'c'])
+        self.assertEqual(c2.sections, ['section', 'section2', 'section3'])
+        self.assertEqual(c2['section'].scalars, ['a', 'b', 'c'])
+        self.assertEqual(c2['section'].sections, ['section', 'section2', 'section3'])
+
+        self.assertFalse(c['section'] is c2['section'])
+        self.assertFalse(c['section']['section'] is c2['section']['section'])
 
 #==============================================================================
 
@@ -57,6 +92,7 @@ if __name__ == '__main__':
     suite = unittest.TestSuite()
 
     suite.addTest(TestConfigObj('test_import', verbose))
+    suite.addTest(TestConfigObj('test_order_preserved', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 
