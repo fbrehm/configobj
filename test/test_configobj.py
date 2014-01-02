@@ -235,7 +235,7 @@ class TestConfigObj(ConfigObjTestcase):
         currency_signs = '¤ $ € ¢ ¥'
         a_accents = 'À Á À Â Ã Å Æ à á à â ã å æ'
         if sys.version_info[0] <= 2:
-            german_umlaute = german_umlaute.decode('utf-8')
+            german_umlaute = u'ä ö ü Ä Ö Ü ß'
             currency_signs = currency_signs.decode('utf-8')
             a_accents = a_accents.decode('utf-8')
 
