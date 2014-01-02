@@ -226,19 +226,22 @@ class TestConfigObj(ConfigObjTestcase):
 
         log.info("Testing loading an .ini-file with utf-8 ...")
 
+        log.debug("Using .ini-file %r.", self.ini_file_utf_8)
         if not os.path.isfile(self.ini_file_utf_8):
             self.fail("Ini file %r doesn't exists." % (self.ini_file_utf_8))
 
         conf = ConfigObj(self.ini_file_utf_8)
         log.debug("ConfigObj: %s", str(conf))
+        ascii_chars = 'a b c d A B C D 0 1 2 3 4 , . ; : - _ ! " $ % & / ( ) = ?'
         german_umlaute = 'ä ö ü Ä Ö Ü ß'
         currency_signs = '¤ $ € ¢ ¥'
         a_accents = 'À Á À Â Ã Å Æ à á à â ã å æ'
         if sys.version_info[0] <= 2:
-            german_umlaute = u'ä ö ü Ä Ö Ü ß'
-            currency_signs = currency_signs.decode('utf-8')
-            a_accents = a_accents.decode('utf-8')
+            german_umlaute = u'ä ö ü Ä Ö Ü ß'.encode('utf-8')
+            currency_signs = u'¤ $ € ¢ ¥'.encode('utf-8')
+            a_accents = u'À Á À Â Ã Å Æ à á à â ã å æ'.encode('utf-8')
 
+        self.assertEqual(ascii_chars, conf['ascii_chars'])
         self.assertEqual(german_umlaute, conf['german_umlaute'])
         self.assertEqual(currency_signs, conf['currency_signs'])
         self.assertEqual(a_accents, conf['a_accents'])
