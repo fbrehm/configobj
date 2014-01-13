@@ -85,7 +85,7 @@ tdquot = "'''%s'''"
 # Sentinel for use in getattr calls to replace hasattr
 MISSING = object()
 
-__version__ = '4.7.2'
+__version__ = '4.7.3'
 
 try:
     any
