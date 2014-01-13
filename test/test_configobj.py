@@ -52,6 +52,18 @@ class TestConfigObj(ConfigObjTestcase):
         self.ini_file_utf_32be = os.path.join(self.testdir, 'conf.utf-32be.ini')
         self.ini_file_utf_32le = os.path.join(self.testdir, 'conf.utf-32le.ini')
 
+        self.ascii_chars = 'a b c d A B C D 0 1 2 3 4 , . ; : - _ ! " $ % & / ( ) = ?'
+        self.german_umlaute = 'ä ö ü Ä Ö Ü ß'
+        self.currency_signs = '¤ $ € ¢ ¥'
+        self.a_accents = 'À Á À Â Ã Å Æ à á à â ã å æ'
+        if sys.version_info[0] <= 2:
+            # 'ä ö ü Ä Ö Ü ß'.encode('utf-8')
+            self.german_umlaute = '\xc3\xa4 \xc3\xb6 \xc3\xbc \xc3\x84 \xc3\x96 \xc3\x9c \xc3\x9f'
+            # '¤ $ € ¢ ¥'.encode('utf-8')
+            self.currency_signs = '\xc2\xa4 $ \xe2\x82\xac \xc2\xa2 \xc2\xa5'
+            # 'À Á À Â Ã Å Æ à á à â ã å æ'.encode('utf-8')
+            self.a_accents = '\xc3\x80 \xc3\x81 \xc3\x80 \xc3\x82 \xc3\x83 \xc3\x85 \xc3\x86 \xc3\xa0 \xc3\xa1 \xc3\xa0 \xc3\xa2 \xc3\xa3 \xc3\xa5 \xc3\xa6'
+
     #--------------------------------------------------------------------------
     def test_import(self):
 
@@ -232,19 +244,61 @@ class TestConfigObj(ConfigObjTestcase):
 
         conf = ConfigObj(self.ini_file_utf_8)
         log.debug("ConfigObj: %s", str(conf))
-        ascii_chars = 'a b c d A B C D 0 1 2 3 4 , . ; : - _ ! " $ % & / ( ) = ?'
-        german_umlaute = 'ä ö ü Ä Ö Ü ß'
-        currency_signs = '¤ $ € ¢ ¥'
-        a_accents = 'À Á À Â Ã Å Æ à á à â ã å æ'
-        if sys.version_info[0] <= 2:
-            german_umlaute = u'ä ö ü Ä Ö Ü ß'.encode('utf-8')
-            currency_signs = u'¤ $ € ¢ ¥'.encode('utf-8')
-            a_accents = u'À Á À Â Ã Å Æ à á à â ã å æ'.encode('utf-8')
 
-        self.assertEqual(ascii_chars, conf['ascii_chars'])
-        self.assertEqual(german_umlaute, conf['german_umlaute'])
-        self.assertEqual(currency_signs, conf['currency_signs'])
-        self.assertEqual(a_accents, conf['a_accents'])
+        log.debug("ASCII characters %s:\n%s\n%r",
+                self.ascii_chars.__class__.__name__, self.ascii_chars, self.ascii_chars)
+        log.debug("German umlaute %s:\n%s\n%r",
+                self.german_umlaute.__class__.__name__, self.german_umlaute, self.german_umlaute)
+        log.debug("Currency signs %s:\n%s\n%r",
+                self.currency_signs.__class__.__name__, self.currency_signs, self.currency_signs)
+        log.debug("Letter A with accent %s:\n%s\n%r",
+                self.a_accents.__class__.__name__, self.a_accents, self.a_accents)
+
+        self.assertEqual(self.ascii_chars, conf['ascii_chars'])
+        self.assertEqual(self.german_umlaute, conf['german_umlaute'])
+        self.assertEqual(self.currency_signs, conf['currency_signs'])
+        self.assertEqual(self.a_accents, conf['a_accents'])
+
+    #--------------------------------------------------------------------------
+    def test_utf_16(self):
+
+        import configobj
+        from configobj import ConfigObj
+
+        log.info("Testing loading an .ini-file with utf-16 ...")
+
+        log.debug("Using .ini-file %r.", self.ini_file_utf_16)
+        if not os.path.isfile(self.ini_file_utf_16):
+            self.fail("Ini file %r doesn't exists." % (self.ini_file_utf_16))
+
+        conf = ConfigObj(self.ini_file_utf_16)
+        log.debug("ConfigObj: %s", str(conf))
+
+        self.assertEqual(self.ascii_chars, conf['ascii_chars'])
+        self.assertEqual(self.german_umlaute, conf['german_umlaute'])
+        self.assertEqual(self.currency_signs, conf['currency_signs'])
+        self.assertEqual(self.a_accents, conf['a_accents'])
+
+    #--------------------------------------------------------------------------
+    def test_utf_32(self):
+
+        import configobj
+        from configobj import ConfigObj
+
+        log.info("Testing loading an .ini-file with utf-32 ...")
+
+        log.debug("Using .ini-file %r.", self.ini_file_utf_32)
+        if not os.path.isfile(self.ini_file_utf_32):
+            self.fail("Ini file %r doesn't exists." % (self.ini_file_utf_32))
+
+        conf = ConfigObj(self.ini_file_utf_32, raise_errors = True,
+                encoding = 'utf-32')
+        log.debug("ConfigObj: %s", str(conf))
+
+        self.assertEqual(self.ascii_chars, conf['ascii_chars'])
+        self.assertEqual(self.german_umlaute, conf['german_umlaute'])
+        self.assertEqual(self.currency_signs, conf['currency_signs'])
+        self.assertEqual(self.a_accents, conf['a_accents'])
 
 #==============================================================================
 
@@ -268,6 +322,8 @@ if __name__ == '__main__':
     suite.addTest(TestConfigObj('test_interpolation_with_section_names', verbose))
     suite.addTest(TestConfigObj('test_interoplation_repr', verbose))
     suite.addTest(TestConfigObj('test_utf_8', verbose))
+    suite.addTest(TestConfigObj('test_utf_16', verbose))
+    suite.addTest(TestConfigObj('test_utf_32', verbose))
 
     runner = unittest.TextTestRunner(verbosity = verbose)
 

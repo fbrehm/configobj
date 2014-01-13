@@ -21,9 +21,11 @@
 import os
 import re
 import sys
+import logging
 
 from codecs import BOM_UTF8, BOM_UTF16, BOM_UTF16_BE, BOM_UTF16_LE
 
+log = logging.getLogger(__name__)
 
 # imported lazily to avoid startup performance hit if it isn't used
 compiler = None
@@ -593,7 +595,15 @@ class Section(dict):
         ``unrepr`` must be set when setting a value to a dictionary, without
         creating a new sub-section.
         """
+
+        if sys.version_info[0] <= 2:
+            if isinstance(key, unicode):
+                key = key.encode('utf-8')
+            if isinstance(value, unicode):
+                value = value.encode('utf-8')
+
         if not isinstance(key, str):
+            log.debug("Class of key %r: %s.", key, key.__class__.__name__)
             raise ValueError('The key "%s" is not a string.' % key)
         
         # add the comment
@@ -1468,6 +1478,7 @@ class ConfigObj(Section):
                 continue
             else:
                 # BOM discovered
+                log.debug("Discovered BOM %r.", BOM)
                 self.encoding = final_encoding
                 if not final_encoding:
                     self.BOM = True
@@ -1516,6 +1527,8 @@ class ConfigObj(Section):
 
         if is a string, it also needs converting to a list.
         """
+
+        log.debug("Decoding infile from %r ...", encoding)
 
         # Python 3
         if sys.version_info[0] > 2:
