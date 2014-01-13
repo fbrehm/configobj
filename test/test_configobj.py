@@ -12,6 +12,7 @@ import os
 import sys
 import logging
 import textwrap
+import tempfile
 
 try:
     import unittest2 as unittest
@@ -63,6 +64,36 @@ class TestConfigObj(ConfigObjTestcase):
             self.currency_signs = '\xc2\xa4 $ \xe2\x82\xac \xc2\xa2 \xc2\xa5'
             # 'À Á À Â Ã Å Æ à á à â ã å æ'.encode('utf-8')
             self.a_accents = '\xc3\x80 \xc3\x81 \xc3\x80 \xc3\x82 \xc3\x83 \xc3\x85 \xc3\x86 \xc3\xa0 \xc3\xa1 \xc3\xa0 \xc3\xa2 \xc3\xa3 \xc3\xa5 \xc3\xa6'
+
+        self.outfile = None
+        self.del_outfile = True
+
+    #--------------------------------------------------------------------------
+    def tearDown(self):
+
+        if self.outfile and os.path.exists(self.outfile):
+            if self.del_outfile:
+                log.info("Removing temporary outfile %r ...", self.outfile)
+                os.remove(self.outfile)
+            else:
+                log.warn("Don't forget to remove temporary outfile %r!",
+                        self.outfile)
+
+    #--------------------------------------------------------------------------
+    def init_outfile(self):
+
+        if self.outfile:
+            msg = "Temporary outfile %r already defined." % (self.outfile)
+            self.fail(msg)
+
+        (fhandle, fname) = tempfile.mkstemp(
+                prefix = 'tmp_',
+                suffix = '.ini',
+                text = True,
+        )
+        os.close(fhandle)
+        log.debug("Created temporary outfile %r.", fname)
+        self.outfile = fname
 
     #--------------------------------------------------------------------------
     def test_import(self):
@@ -259,6 +290,18 @@ class TestConfigObj(ConfigObjTestcase):
         self.assertEqual(self.currency_signs, conf['currency_signs'])
         self.assertEqual(self.a_accents, conf['a_accents'])
 
+        log.info("Testing writing an .ini-file with utf-8 ...")
+        self.init_outfile()
+        #self.del_outfile = False
+        gen_conf = ConfigObj(encoding = 'utf-8')
+        gen_conf['ascii_chars'] = self.ascii_chars
+        gen_conf['german_umlaute'] = self.german_umlaute
+        gen_conf['currency_signs'] = self.currency_signs
+        gen_conf['a_accents'] = self.a_accents
+        log.debug("Generated ConfigObj: %s", str(gen_conf))
+        gen_conf.filename = self.outfile
+        gen_conf.write()
+
     #--------------------------------------------------------------------------
     def test_utf_16(self):
 
@@ -278,6 +321,18 @@ class TestConfigObj(ConfigObjTestcase):
         self.assertEqual(self.german_umlaute, conf['german_umlaute'])
         self.assertEqual(self.currency_signs, conf['currency_signs'])
         self.assertEqual(self.a_accents, conf['a_accents'])
+
+        log.info("Testing writing an .ini-file with utf-16 ...")
+        self.init_outfile()
+        #self.del_outfile = False
+        gen_conf = ConfigObj(encoding = 'utf-16')
+        gen_conf['ascii_chars'] = self.ascii_chars
+        gen_conf['german_umlaute'] = self.german_umlaute
+        gen_conf['currency_signs'] = self.currency_signs
+        gen_conf['a_accents'] = self.a_accents
+        log.debug("Generated ConfigObj: %s", str(gen_conf))
+        gen_conf.filename = self.outfile
+        gen_conf.write()
 
     #--------------------------------------------------------------------------
     def test_utf_32(self):
@@ -299,6 +354,18 @@ class TestConfigObj(ConfigObjTestcase):
         self.assertEqual(self.german_umlaute, conf['german_umlaute'])
         self.assertEqual(self.currency_signs, conf['currency_signs'])
         self.assertEqual(self.a_accents, conf['a_accents'])
+
+        log.info("Testing writing an .ini-file with utf-32 ...")
+        self.init_outfile()
+        #self.del_outfile = False
+        gen_conf = ConfigObj(encoding = 'utf-32')
+        gen_conf['ascii_chars'] = self.ascii_chars
+        gen_conf['german_umlaute'] = self.german_umlaute
+        gen_conf['currency_signs'] = self.currency_signs
+        gen_conf['a_accents'] = self.a_accents
+        log.debug("Generated ConfigObj: %s", str(gen_conf))
+        gen_conf.filename = self.outfile
+        gen_conf.write()
 
 #==============================================================================
 

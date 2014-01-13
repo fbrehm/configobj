@@ -1515,6 +1515,14 @@ class ConfigObj(Section):
 
     def _a_to_u(self, aString):
         """Decode ASCII strings to unicode if a self.encoding is specified."""
+        if sys.version_info[0] > 2:
+            # Python 3
+            if not isinstance(aString, str) and self.encoding:
+                return aString.encode('ascii')
+            else:
+                return aString
+
+        # Python 2
         if self.encoding:
             return aString.decode('ascii')
         else:
@@ -1560,15 +1568,20 @@ class ConfigObj(Section):
 
         return infile
 
-
     def _decode_element(self, line):
         """Decode element to unicode if necessary."""
         if not self.encoding:
             return line
-        if isinstance(line, str) and self.default_encoding:
-            return line.decode(self.default_encoding)
-        return line
 
+        if sys.version_info[0] > 2:
+            # Python 3
+            if not isinstance(line, str) and self.default_encoding:
+                return line.decode(self.default_encoding)
+        else:
+            # Python 2
+            if isinstance(line, unicode) and self.default_encoding:
+                return line.encode(self.default_encoding)
+        return line
 
     def _str(self, value):
         """
@@ -1797,30 +1810,32 @@ class ConfigObj(Section):
         return value
 
 
-    def _quote(self, value, multiline=True):
+    def _quote(self, value, multiline = True):
         """
         Return a safely quoted version of a value.
-        
+
         Raise a ConfigObjError if the value cannot be safely quoted.
         If multiline is ``True`` (default) then use triple quotes
         if necessary.
-        
+
         * Don't quote values that don't need it.
         * Recursively quote members of a list and return a comma joined list.
         * Multiline is ``False`` for lists.
         * Obey list syntax for empty and single member lists.
-        
+
         If ``list_values=False`` then the value is only quoted if it contains
         a ``\\n`` (is multiline) or '#'.
-        
+
         If ``write_empty_values`` is set, and the value is an empty string, it
         won't be quoted.
         """
+
+        #log.debug("Quoting value %r.", value)
         if multiline and self.write_empty_values and value == '':
             # Only if multiline is set, so that it is used for values not
             # keys, and not values that are part of a list
             return ''
-        
+
         if multiline and isinstance(value, (list, tuple)):
             if not value:
                 return ','
@@ -1828,6 +1843,7 @@ class ConfigObj(Section):
                 return self._quote(value[0], multiline=False) + ','
             return ', '.join([self._quote(val, multiline=False)
                 for val in value])
+
         if not isinstance(value, str):
             if self.stringify:
                 value = str(value)
@@ -1836,12 +1852,12 @@ class ConfigObj(Section):
 
         if not value:
             return '""'
-        
+
         no_lists_no_quotes = not self.list_values and '\n' not in value and '#' not in value
         need_triple = multiline and ((("'" in value) and ('"' in value)) or ('\n' in value ))
         hash_triple_quote = multiline and not need_triple and ("'" in value) and ('"' in value) and ('#' in value)
         check_for_single = (no_lists_no_quotes or not need_triple) and not hash_triple_quote
-        
+
         if check_for_single:
             if not self.list_values:
                 # we don't quote if ``list_values=False``
@@ -1859,13 +1875,13 @@ class ConfigObj(Section):
         else:
             # if value has '\n' or "'" *and* '"', it will need triple quotes
             quot = self._get_triple_quote(value)
-        
+
         if quot == noquot and '#' in value and self.list_values:
             quot = self._get_single_quote(value)
-                
+
         return quot % value
-    
-    
+
+
     def _get_single_quote(self, value):
         if ("'" in value) and ('"' in value):
             raise ConfigObjError('Value "%s" cannot be safely quoted.' % value)
@@ -2022,15 +2038,40 @@ class ConfigObj(Section):
     def _write_line(self, indent_string, entry, this_entry, comment):
         """Write an individual line, for the write method"""
         # NOTE: the calls to self._quote here handles non-StringType values.
+        #log.debug("Indent %s: %r", indent_string.__class__.__name__, indent_string)
+        #log.debug("Entry %s: %r", entry.__class__.__name__, entry)
+        #log.debug("This Entry %s: %r", this_entry.__class__.__name__, this_entry)
+        #log.debug("Comment %s: %r", comment.__class__.__name__, comment)
         if not self.unrepr:
             val = self._decode_element(self._quote(this_entry))
         else:
             val = repr(this_entry)
-        return '%s%s%s%s%s' % (indent_string,
-                               self._decode_element(self._quote(entry, multiline=False)),
-                               self._a_to_u(' = '),
-                               val,
-                               self._decode_element(comment))
+        #log.debug("Val %s: %r", val.__class__.__name__, val)
+
+        line_key = self._decode_element(self._quote(entry, multiline = False))
+        #log.debug("Key %s: %r", line_key.__class__.__name__, line_key)
+        line_val =  self._decode_element(val)
+        #log.debug("Val %s: %r", line_val.__class__.__name__, line_val)
+        line_comment = self._decode_element(comment)
+        #log.debug("Comment %s: %r", line_comment.__class__.__name__, line_comment)
+
+        #line = '%s' % (indent_string)
+        #log.debug("Line %s: %r", line.__class__.__name__, line)
+        #line = '%s%s' % (indent_string, line_key)
+        #log.debug("Line %s: %r", line.__class__.__name__, line)
+        #line = '%s%s%s' % (indent_string, line_key, ' = ')
+        #log.debug("Line %s: %r", line.__class__.__name__, line)
+        #line = '%s%s%s%s' % (indent_string, line_key, ' = ', line_val)
+        #log.debug("Line %s: %r", line.__class__.__name__, line)
+        line = '%s%s%s%s%s' % (indent_string, line_key, ' = ', line_val, line_comment)
+        #log.debug("Line %s: %r", line.__class__.__name__, line)
+        return line
+
+        #return '%s%s%s%s%s' % (indent_string,
+        #                       self._decode_element(self._quote(entry, multiline=False)),
+        #                       self._a_to_u(' = '),
+        #                       val,
+        #                       self._decode_element(comment))
 
 
     def _write_marker(self, indent_string, depth, entry, comment):
@@ -2151,7 +2192,10 @@ class ConfigObj(Section):
             and sys.platform == 'win32' and newline == '\r\n'):
             # Windows specific hack to avoid writing '\r\r\n'
             newline = '\n'
-        output = self._a_to_u(newline).join(out)
+        #output = self._a_to_u(newline).join(out)
+        output = newline.join(out)
+        if sys.version_info[0] <= 2:
+            output = output.decode('utf-8')
         nl = newline
         if self.encoding:
             output = output.encode(self.encoding)
