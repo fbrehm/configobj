@@ -4,6 +4,7 @@
 *.egg
 *-stamp
 *.bak
+*.diff
 build
 trace
 MANIFEST
