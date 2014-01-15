@@ -2037,41 +2037,18 @@ class ConfigObj(Section):
     def _write_line(self, indent_string, entry, this_entry, comment):
         """Write an individual line, for the write method"""
         # NOTE: the calls to self._quote here handles non-StringType values.
-        #log.debug("Indent %s: %r", indent_string.__class__.__name__, indent_string)
-        #log.debug("Entry %s: %r", entry.__class__.__name__, entry)
-        #log.debug("This Entry %s: %r", this_entry.__class__.__name__, this_entry)
-        #log.debug("Comment %s: %r", comment.__class__.__name__, comment)
+
         if not self.unrepr:
             val = self._decode_element(self._quote(this_entry))
         else:
             val = repr(this_entry)
-        #log.debug("Val %s: %r", val.__class__.__name__, val)
 
         line_key = self._decode_element(self._quote(entry, multiline = False))
-        #log.debug("Key %s: %r", line_key.__class__.__name__, line_key)
         line_val =  self._decode_element(val)
-        #log.debug("Val %s: %r", line_val.__class__.__name__, line_val)
         line_comment = self._decode_element(comment)
-        #log.debug("Comment %s: %r", line_comment.__class__.__name__, line_comment)
 
-        #line = '%s' % (indent_string)
-        #log.debug("Line %s: %r", line.__class__.__name__, line)
-        #line = '%s%s' % (indent_string, line_key)
-        #log.debug("Line %s: %r", line.__class__.__name__, line)
-        #line = '%s%s%s' % (indent_string, line_key, ' = ')
-        #log.debug("Line %s: %r", line.__class__.__name__, line)
-        #line = '%s%s%s%s' % (indent_string, line_key, ' = ', line_val)
-        #log.debug("Line %s: %r", line.__class__.__name__, line)
         line = '%s%s%s%s%s' % (indent_string, line_key, ' = ', line_val, line_comment)
-        #log.debug("Line %s: %r", line.__class__.__name__, line)
         return line
-
-        #return '%s%s%s%s%s' % (indent_string,
-        #                       self._decode_element(self._quote(entry, multiline=False)),
-        #                       self._a_to_u(' = '),
-        #                       val,
-        #                       self._decode_element(comment))
-
 
     def _write_marker(self, indent_string, depth, entry, comment):
         """Write a section marker line"""
