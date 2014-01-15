@@ -80,6 +80,31 @@ class TestConfigObj(ConfigObjTestcase):
                         self.outfile)
 
     #--------------------------------------------------------------------------
+    def compare_files(self, file1, file2):
+
+        log.debug("Comparing files %r and %r.", file1, file2)
+
+        for f in (file1, file2):
+
+            if not os.path.exists(f):
+                self.fail("File %r for comparision must exists.", f)
+            if not os.path.isfile(f):
+                self.fail("File %r must be a regular file.", f)
+
+        stat1 = os.stat(file1)
+        stat2 = os.stat(file2)
+
+        size1 = stat1.st_size
+        log.debug("Size of file %r is %d bytes.", file1, size1)
+        size2 = stat2.st_size
+        log.debug("Size of file %r is %d bytes.", file2, size2)
+
+        msg = "Size of file %r is %d bytes, size of file %r is %d bytes, " % (
+                file1, size1, file2, size2)
+        msg += "but they must be equal."
+        self.assertEqual(size1, size2, msg)
+
+    #--------------------------------------------------------------------------
     def init_outfile(self):
 
         if self.outfile:
@@ -301,6 +326,8 @@ class TestConfigObj(ConfigObjTestcase):
         log.debug("Generated ConfigObj: %s", str(gen_conf))
         gen_conf.filename = self.outfile
         gen_conf.write()
+
+        self.compare_files(self.ini_file_utf_8, self.outfile)
 
     #--------------------------------------------------------------------------
     def test_utf_16(self):

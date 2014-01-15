@@ -464,15 +464,27 @@ class Validator(object):
     ...     # check that value is of the correct type.
     ...     # possible valid inputs are integers or strings
     ...     # that represent integers
-    ...     if not isinstance(value, (int, long, basestring)):
-    ...         raise VdtTypeError(value)
-    ...     elif isinstance(value, basestring):
-    ...         # if we are given a string
-    ...         # attempt to convert to an integer
-    ...         try:
-    ...             value = int(value)
-    ...         except ValueError:
-    ...             raise VdtValueError(value)
+    ...	    import sys
+    ...     if sys.version_info[0] <= 2:
+    ...         if not isinstance(value, (int, long, basestring)):
+    ...             raise VdtTypeError(value)
+    ...         elif isinstance(value, basestring):
+    ...             # if we are given a string
+    ...             # attempt to convert to an integer
+    ...             try:
+    ...                 value = int(value)
+    ...             except ValueError:
+    ...                 raise VdtValueError(value)
+    ...     else:
+    ...         if not isinstance(value, (int, str, bytes)):
+    ...             raise VdtTypeError(value)
+    ...         elif isinstance(value, (str, bytes)):
+    ...             # if we are given a string
+    ...             # attempt to convert to an integer
+    ...             try:
+    ...                 value = int(value)
+    ...             except ValueError:
+    ...                 raise VdtValueError(value)
     ...     # check the value is between our constraints
     ...     if not min <= value:
     ...          raise VdtValueTooSmallError(value)
@@ -1338,7 +1350,7 @@ def _test(value, *args, **keywargs):
     ...    ]
     >>> v = Validator({'test': _test})
     >>> for entry in checks:
-    ...     print v.check(('test(%s)' % entry), 3)
+    ...     print(v.check(('test(%s)' % entry), 3))
     (3, ('3', '6'), {'test': ['a', 'b', 'c'], 'max': '3', 'min': '1'})
     (3, ('3',), {})
     (3, ('3', '6'), {})
@@ -1416,7 +1428,7 @@ def _test3():
     ''
     >>> vtor.check('string(default="\n")', '', missing=True)
     '\n'
-    >>> print vtor.check('string(default="\n")', '', missing=True),
+    >>> print(vtor.check('string(default="\n")', '', missing=True),)
     <BLANKLINE>
     >>> vtor.check('string()', '\n')
     '\n'
