@@ -2196,15 +2196,18 @@ class ConfigObj(Section):
         if sys.version_info[0] <= 2:
             output = output.decode('utf-8')
         nl = newline
+
+        # Add newline, if necessary
+        if not output.endswith(newline):
+            output += newline
+
+        # Encode to the desired encoding
         if self.encoding:
             output = output.encode(self.encoding)
-            nl = newline.encode(self.encoding)
         if self.BOM and ((self.encoding is None) or match_utf8(self.encoding)):
             # Add the UTF8 BOM
             output = BOM_UTF8 + output
 
-        if not output.endswith(nl):
-            output += nl
         if outfile is not None:
             outfile.write(output)
         else:
