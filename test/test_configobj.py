@@ -13,6 +13,7 @@ import sys
 import logging
 import textwrap
 import tempfile
+import hashlib
 
 try:
     import unittest2 as unittest
@@ -103,6 +104,51 @@ class TestConfigObj(ConfigObjTestcase):
                 file1, size1, file2, size2)
         msg += "but they must be equal."
         self.assertEqual(size1, size2, msg)
+
+        def fcontent(f):
+            fh = open(f, 'rb')
+            content = ''
+            try:
+                content = fh.read()
+            finally:
+                fh.close()
+            return content
+
+        fcontent1 = fcontent(file1)
+        fcontent2 = fcontent(file2)
+
+        hash_md5_1 = hashlib.md5()
+        hash_md5_2 = hash_md5_1.copy()
+        hash_md5_1.update(fcontent1)
+        hash_md5_2.update(fcontent2)
+        digest1 = hash_md5_1.hexdigest()
+        log.debug("MD5 digest of %r: %r.", file1, digest1)
+        digest2 = hash_md5_2.hexdigest()
+        log.debug("MD5 digest of %r: %r.", file2, digest2)
+        msg = "MD5 digests of %r and %r must be equal." % (file1, file2)
+        self.assertEqual(digest1, digest2, msg)
+
+        hash_sha1_1 = hashlib.sha1()
+        hash_sha1_2 = hash_sha1_1.copy()
+        hash_sha1_1.update(fcontent1)
+        hash_sha1_2.update(fcontent2)
+        digest1 = hash_sha1_1.hexdigest()
+        log.debug("SHA1 digest of %r: %r.", file1, digest1)
+        digest2 = hash_sha1_2.hexdigest()
+        log.debug("SHA1 digest of %r: %r.", file2, digest2)
+        msg = "SHA1 digests of %r and %r must be equal." % (file1, file2)
+        self.assertEqual(digest1, digest2, msg)
+
+        hash_sha256_1 = hashlib.sha256()
+        hash_sha256_2 = hash_sha256_1.copy()
+        hash_sha256_1.update(fcontent1)
+        hash_sha256_2.update(fcontent2)
+        digest1 = hash_sha256_1.hexdigest()
+        log.debug("SHA256 digest of %r: %r.", file1, digest1)
+        digest2 = hash_sha256_2.hexdigest()
+        log.debug("SHA256 digest of %r: %r.", file2, digest2)
+        msg = "SHA256 digests of %r and %r must be equal." % (file1, file2)
+        self.assertEqual(digest1, digest2, msg)
 
     #--------------------------------------------------------------------------
     def init_outfile(self):
@@ -361,6 +407,8 @@ class TestConfigObj(ConfigObjTestcase):
         gen_conf.filename = self.outfile
         gen_conf.write()
 
+        self.compare_files(self.ini_file_utf_16, self.outfile)
+
     #--------------------------------------------------------------------------
     def test_utf_32(self):
 
@@ -393,6 +441,8 @@ class TestConfigObj(ConfigObjTestcase):
         log.debug("Generated ConfigObj: %s", str(gen_conf))
         gen_conf.filename = self.outfile
         gen_conf.write()
+
+        self.compare_files(self.ini_file_utf_32, self.outfile)
 
 #==============================================================================
 
