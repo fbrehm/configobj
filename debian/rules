@@ -15,6 +15,13 @@ PYTHON3S := $(shell py3versions -vr || true)
 %:
 	dh $@ --with python2,python3
 
+override_dh_auto_clean:
+	dh_auto_clean
+	@echo "Cleaning build ..."
+	rm -rvf build
+	@echo "Cleaning debian/tmp ..."
+	rm -rvf debian/tmp
+
 override_dh_auto_build:
 	@echo "Building normal stuff ..."
 	dh_auto_build
@@ -22,23 +29,6 @@ override_dh_auto_build:
 	set -e && for pyvers in $(PYTHON2S); do python$$pyvers setup.py build; done
 	@echo "Building Python 3 stuff ..."
 	set -e && for pyvers in $(PYTHON3S); do python$$pyvers setup.py build; done
-#	env PYTHONPATH=`pwd` epydoc --name ConfigObj \
-#		--url http://www.voidspace.org.uk/python/configobj.html \
-#		-o api configobj
-
-#override_dh_compress:
-#	dh_compress -X.js
-
-#get-orig-source:
-#	set -e; \
-#	VER=$(shell dpkg-parsechangelog | sed -rne 's,^Version: ([^+]+).*,\1,p'); \
-#	uscan --noconf --force-download --download-version=$$VER --destdir=.; \
-#	unzip configobj-$$VER.zip; \
-#	rm configobj-$$VER.zip; \
-#	rm -r __MACOSX; \
-#	GZIP=--best tar -cz --owner root --group root --mode a+rX \
-#	                -f configobj_$$VER+ds.orig.tar.gz configobj-$$VER; \
-#	rm -r configobj-$$VER
 
 override_dh_auto_install:
 	@echo "Installing normal stuff ..."
