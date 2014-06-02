@@ -1,3 +1,9 @@
+configobj (4.7.3-1pb1) wheezy; urgency=low
+
+  * Build for Wheezy
+
+ -- Frank Brehm <frank.brehm@profitbricks.com>  Mon, 02 Jun 2014 12:13:42 +0200
+
 configobj (4.7.3-1pb0) testing; urgency=low
 
   * New version in preparation of Python3
