@@ -1,0 +1,8 @@
+*.debhelper
+*.log
+*.substvars
+files
+tmp
+python-configobj
+python3-configobj
+python-configobj-doc

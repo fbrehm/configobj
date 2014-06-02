@@ -1,0 +1,100 @@
+Source: configobj
+Section: python
+Priority: optional
+Maintainer: Daniel Watkins <daniel@daniel-watkins.co.uk>
+Uploaders:
+ Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>,
+ Stefano Rivera <stefanor@debian.org>,
+ Jelmer Vernooij <jelmer@debian.org>,
+ Frank Brehm <frank.brehm@profitbricks.com>
+Build-Depends:
+ debhelper (>= 9),
+ python-all (>= 2.7),
+ python3-all (>= 3.2),
+ python-docutils,
+ python-epydoc,
+ python-setuptools,
+ python-unittest2
+Standards-Version: 3.9.3
+Homepage: http://www.voidspace.org.uk/python/configobj.html
+X-Python-Version: >= 2.6
+X-Python3-Version: >=3.2
+Vcs-Git: git+ssh://git.pb.local/srv/git/python/configobj.git
+Vcs-Browser: http://git.pb.local/gitweb/?p=python/configobj.git
+
+Package: python-configobj
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}
+Description: simple but powerful config file reader and writer for Python
+ ConfigObj is a simple but powerful config file reader and writer: an
+ ini file round tripper. Its main feature is that it is very easy to
+ use, with a straightforward programmer's interface and a simple
+ syntax for config files. It has lots of other features, though:
+ .
+  * Nested sections (subsections), to any level
+  * List values
+  * Multiple line values
+  * String interpolation (substitution)
+  * Integrated with a powerful validation system
+    + including automatic type checking/conversion
+    + and allowing default values
+    + repeated sections
+  * All comments in the file are preserved
+  * The order of keys/sections is preserved
+  * Full Unicode support
+  * Powerful unrepr mode for storing/retrieving Python data-types
+ .
+ This package contains all modules for Python2
+
+Package: python3-configobj
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: simple but powerful config file reader and writer for Python
+ ConfigObj is a simple but powerful config file reader and writer: an
+ ini file round tripper. Its main feature is that it is very easy to
+ use, with a straightforward programmer's interface and a simple
+ syntax for config files. It has lots of other features, though:
+ .
+  * Nested sections (subsections), to any level
+  * List values
+  * Multiple line values
+  * String interpolation (substitution)
+  * Integrated with a powerful validation system
+    + including automatic type checking/conversion
+    + and allowing default values
+    + repeated sections
+  * All comments in the file are preserved
+  * The order of keys/sections is preserved
+  * Full Unicode support
+  * Powerful unrepr mode for storing/retrieving Python data-types
+ .
+ This package contains all modules for Python3
+
+Package: python-configobj-doc
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Suggests: pdf-viewer,
+          www-browser,
+          python-configobj (= ${binary:Version}),
+          python3-configobj (= ${binary:Version})
+Description: simple but powerful config file reader and writer for Python
+ ConfigObj is a simple but powerful config file reader and writer: an
+ ini file round tripper. Its main feature is that it is very easy to
+ use, with a straightforward programmer's interface and a simple
+ syntax for config files. It has lots of other features, though:
+ .
+  * Nested sections (subsections), to any level
+  * List values
+  * Multiple line values
+  * String interpolation (substitution)
+  * Integrated with a powerful validation system
+    + including automatic type checking/conversion
+    + and allowing default values
+    + repeated sections
+  * All comments in the file are preserved
+  * The order of keys/sections is preserved
+  * Full Unicode support
+  * Powerful unrepr mode for storing/retrieving Python data-types
+ .
+ This package contains the module documentation in HTML and PDF format.
