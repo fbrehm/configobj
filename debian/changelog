@@ -1,3 +1,9 @@
+configobj (4.7.3-1pb3) all; urgency=medium
+
+  * Non maintainer upload
+
+ -- Frank Brehm <frank.brehm@profitbricks.com>  Fri, 27 Feb 2015 11:34:35 +0100
+
 configobj (4.7.3-1pb2) stable; urgency=low
 
   * Build for squeeze
