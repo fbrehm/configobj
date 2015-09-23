@@ -2,25 +2,25 @@ Source: configobj
 Section: python
 Priority: optional
 Maintainer: Daniel Watkins <daniel@daniel-watkins.co.uk>
-Uploaders:
- Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>,
- Stefano Rivera <stefanor@debian.org>,
- Jelmer Vernooij <jelmer@debian.org>,
- Frank Brehm <frank.brehm@profitbricks.com>
-Build-Depends:
- debhelper (>= 9),
- python-all (>= 2.7),
- python3-all (>= 3.2),
- python-docutils,
- python-epydoc,
- python-setuptools,
- python-unittest2
-Standards-Version: 3.9.3
+Uploaders: Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>,
+           Stefano Rivera <stefanor@debian.org>,
+           Jelmer Vernooij <jelmer@debian.org>,
+           Frank Brehm <frank.brehm@profitbricks.com>
+Build-Depends: debhelper (>= 9),
+               dh-python,
+               python-all (>= 2.7),
+               python-docutils,
+               python-epydoc,
+               python-setuptools,
+               python-unittest2,
+               python3-all (>= 3.2),
+               python3-setuptools
+Standards-Version: 3.9.6
 Homepage: http://www.voidspace.org.uk/python/configobj.html
-X-Python-Version: >= 2.6
-X-Python3-Version: >=3.2
 Vcs-Git: git+ssh://git.pb.local/srv/git/python/configobj.git
 Vcs-Browser: http://git.pb.local/gitweb/?p=python/configobj.git
+X-Python-Version: >= 2.7
+X-Python3-Version: >=3.2
 
 Package: python-configobj
 Architecture: all
@@ -75,9 +75,9 @@ Architecture: all
 Section: doc
 Depends: ${misc:Depends}
 Suggests: pdf-viewer,
-          www-browser,
           python-configobj (= ${binary:Version}),
-          python3-configobj (= ${binary:Version})
+          python3-configobj (= ${binary:Version}),
+          www-browser
 Description: simple but powerful config file reader and writer for Python
  ConfigObj is a simple but powerful config file reader and writer: an
  ini file round tripper. Its main feature is that it is very easy to
